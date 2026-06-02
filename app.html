@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BATIPIK - Assistant Terrain</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand-card">
+      <img src="logo-batipik.png" alt="Logo BATIPIK" class="brand-logo-img">
+      <div>
+        <div class="logo">BÂTIPIK</div>
+        <div class="tagline" data-i18n="tagline">Devis rapide · Colisage chantier</div>
+      </div>
+      <button type="button" id="lang-toggle" class="lang-toggle" onclick="toggleLang()" aria-label="Changer la langue">🌍 TR</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="tabs" aria-label="Navigation principale">
+      <button type="button" class="tab-btn active" onclick="switchTab(event, 'carreleur')">Carreleur</button>
+      <button type="button" class="tab-btn" onclick="switchTab(event, 'plaquiste')">Plaquiste</button>
+      <button type="button" class="tab-btn" onclick="switchTab(event, 'historique')">Historique</button>
+      <button type="button" class="tab-btn" onclick="switchTab(event, 'parametres')">Paramètres</button>
+    </section>
+
+    <section id="pane-carreleur" class="pane active">
+      <h1>Configuration chantier<br><span>- Carreleur</span></h1>
+      <form id="form-carreleur" onsubmit="calculerCarreleur(event)">
+        <div class="form-group compact-fields">
+          <label for="client-carrelage" data-i18n="client_chantier">Client / chantier</label>
+          <input type="text" id="client-carrelage" data-i18n-placeholder="ph_client_carrelage" placeholder="Ex : Mme Martin - Salle de bain">
+        </div>
+        <div class="form-group compact-fields">
+          <label for="adresse-carrelage" data-i18n="adresse_chantier">Adresse du chantier</label>
+          <input type="text" id="adresse-carrelage" data-i18n-placeholder="ph_adresse" placeholder="Ex : 12 rue des Lilas, Colmar">
+        </div>
+        <div class="form-group compact-fields">
+          <label for="date-souhaitee-carrelage" data-i18n="date_souhaitee">Date souhaitée chantier</label>
+          <input type="date" id="date-souhaitee-carrelage">
+        </div>
+        <div class="client-grid">
+          <div class="form-group compact-fields">
+            <label for="email-carrelage" data-i18n="email_client">Email client</label>
+            <input type="email" id="email-carrelage" data-i18n-placeholder="ph_email_client" placeholder="client@email.fr">
+          </div>
+          <div class="form-group compact-fields">
+            <label for="telephone-carrelage" data-i18n="telephone_client">Téléphone client</label>
+            <input type="tel" id="telephone-carrelage" data-i18n-placeholder="ph_tel_client" placeholder="06 ...">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label data-i18n="type_chantier">Type de chantier</label>
+          <div class="tile-grid grid-3">
+            <label class="tile-radio"><input type="radio" name="type_sol" value="sol_int" checked><span class="tile-icon">▰</span><strong data-i18n="sol_interieur">Sol intérieur</strong></label>
+            <label class="tile-radio"><input type="radio" name="type_sol" value="mur_int"><span class="tile-icon">▦</span><strong><span data-i18n="mur">Mur</span><br><small data-i18n="faience_douche">faïence / douche</small></strong></label>
+            <label class="tile-radio"><input type="radio" name="type_sol" value="sol_ext"><span class="tile-icon">♣</span><strong data-i18n="terrasse_exterieure">Terrasse extérieure</strong></label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="surf-carrelage" data-i18n="surface_totale">Surface totale (m²)</label>
+          <input type="number" id="surf-carrelage" required min="1" step="0.1" data-i18n-placeholder="surface_totale" placeholder="Surface totale (m²)">
+        </div>
+
+        <div class="form-group">
+          <label data-i18n="format_carreau">Format du carreau (cm)</label>
+          <div class="tile-grid grid-4">
+            <label class="tile-radio mini"><input type="radio" name="format_carreau" value="30x30" checked><strong>30 x 30</strong></label>
+            <label class="tile-radio mini"><input type="radio" name="format_carreau" value="45x45"><strong>45 x 45</strong></label>
+            <label class="tile-radio mini"><input type="radio" name="format_carreau" value="60x60"><strong>60 x 60</strong></label>
+            <label class="tile-radio mini"><input type="radio" name="format_carreau" value="rect"><span class="rect-icon"></span><strong><span data-i18n="rectangulaire">Rectangulaire</span><br><small>30 x 60</small></strong></label>
+          </div>
+        </div>
+
+        <div class="form-group split-line">
+          <div>
+            <label for="marge-carrelage" data-i18n="marge_perte_auto">Marge de perte automatique</label>
+            <span class="switch-look" data-i18n="standard_10">+10% standard</span>
+          </div>
+          <select id="marge-carrelage">
+            <option value="1.10">10 % recommandé</option>
+            <option value="1.15">15 % découpes / diagonale</option>
+          </select>
+        </div>
+
+        <details class="finance-box">
+          <summary data-i18n="options_devis">Options devis HT / TVA / remise</summary>
+          <div class="form-group"><label for="px-carrelage" data-i18n="prix_pose_global">Prix de vente posé (€ HT / m²)</label><input type="number" id="px-carrelage" min="0" step="0.01"></div>
+          <div class="detail-toggle"><label><input type="checkbox" id="mode-detail-carrelage" onchange="togglePrixDetail('carrelage')"> <span data-i18n="mode_detail_prix">Détailler le prix pour le client</span></label></div>
+          <div id="detail-prix-carrelage" class="detail-price-box" hidden>
+            <div class="form-group"><label for="prix-materiau-carrelage" data-i18n="prix_carrelage_fourni">Carrelage fourni (€ HT / m²)</label><input type="number" id="prix-materiau-carrelage" min="0" step="0.01" value="25"></div>
+            <div class="form-group"><label for="prix-pose-carrelage" data-i18n="prix_pose_seule">Pose (€ HT / m²)</label><input type="number" id="prix-pose-carrelage" min="0" step="0.01" value="40"></div>
+            <div class="form-group"><label for="prix-conso-carrelage" data-i18n="prix_consommables">Consommables colle / joints (€ HT / m²)</label><input type="number" id="prix-conso-carrelage" min="0" step="0.01" value="10"></div>
+          </div>
+          <div class="form-group"><label for="tva-carrelage">Taux de TVA applicable</label><select id="tva-carrelage"><option value="0.10">10 % - Rénovation</option><option value="0.20">20 % - Neuf</option><option value="0.055">5,5 % - Cas spécifique</option></select></div>
+          <div class="form-group"><label for="remise-carrelage">Remise commerciale (%)</label><input type="number" id="remise-carrelage" value="0" min="0" max="100" step="0.1"></div>
+          <div class="form-group prestations-complementaires-box">
+            <label>Prestations complémentaires</label>
+            <p class="mini-help">Coche une prestation, puis saisis le montant HT. Aucun prix n’est prédéfini.</p>
+            <div class="prestations-suggestions">
+              <label><input type="checkbox" value="Préparation chantier" onchange="togglePrestationComplementaire('carrelage', this)"> Préparation chantier</label>
+              <label><input type="checkbox" value="Dépose ancien carrelage" onchange="togglePrestationComplementaire('carrelage', this)"> Dépose ancien carrelage</label>
+              <label><input type="checkbox" value="Ragréage" onchange="togglePrestationComplementaire('carrelage', this)"> Ragréage</label>
+              <label><input type="checkbox" value="Étanchéité SPEC" onchange="togglePrestationComplementaire('carrelage', this)"> Étanchéité SPEC</label>
+              <label><input type="checkbox" value="Fourniture plinthes" onchange="togglePrestationComplementaire('carrelage', this)"> Fourniture plinthes</label>
+              <label><input type="checkbox" value="Pose plinthes" onchange="togglePrestationComplementaire('carrelage', this)"> Pose plinthes</label>
+              <label><input type="checkbox" value="Évacuation gravats" onchange="togglePrestationComplementaire('carrelage', this)"> Évacuation gravats</label>
+              <label><input type="checkbox" value="Nettoyage fin de chantier" onchange="togglePrestationComplementaire('carrelage', this)"> Nettoyage fin de chantier</label>
+              <label><input type="checkbox" value="Déplacement" onchange="togglePrestationComplementaire('carrelage', this)"> Déplacement</label>
+              <label><input type="checkbox" value="Autre prestation" data-custom="1" onchange="togglePrestationComplementaire('carrelage', this)"> Autre prestation</label>
+            </div>
+            <div id="prestations-montants-carrelage" class="prestations-montants"></div>
+          </div>
+          <div class="form-group manual-line"><label data-i18n="ligne_manuelle">Ligne manuelle optionnelle</label><input type="text" id="label-sup-carrelage" data-i18n-placeholder="ph_ligne_carrelage" placeholder="Ex : Forfait ragréage ou dépose"><input type="number" id="montant-sup-carrelage" data-i18n-placeholder="ph_montant" placeholder="Montant en € HT" min="0" step="0.01"></div>
+        </details>
+
+        <div class="form-group photo-box">
+          <label for="photo-carrelage" data-i18n="photo_chantier">Photo chantier optionnelle</label>
+          <input type="file" id="photo-carrelage" accept="image/*" onchange="previewPhoto('carrelage')">
+          <img id="preview-carrelage" class="photo-preview" alt="Aperçu photo chantier" hidden>
+          <button type="button" id="remove-photo-carrelage" class="btn-photo-remove" onclick="removePhoto('carrelage')" hidden data-i18n="supprimer_photo">Supprimer la photo</button>
+        </div>
+
+        <button type="submit" class="btn-block"><span>▣</span> <span data-i18n="generer_devis_colisage">Générer mon devis<br>et colisage</span></button>
+      </form>
+      <section class="why-box"><h2>Pourquoi BATIPIK ?</h2><div class="why-grid"><span>⏱<small>Gagnez du temps</small></span><span>▤<small>Devis pro</small></span><span>▣<small>Colisage</small></span></div><div class="codex-footer-line">BATIPIK by Codex Expertise.</div></section>
+    </section>
+
+    <section id="pane-plaquiste" class="pane">
+      <h1>Configuration chantier<br><span>- Plaquiste</span></h1>
+      <form id="form-plaquiste" onsubmit="calculerPlaquiste(event)">
+        <div class="form-group compact-fields"><label for="client-placo" data-i18n="client_chantier">Client / chantier</label><input type="text" id="client-placo" data-i18n-placeholder="ph_client_placo" placeholder="Ex : M. Durand - Cloison bureau"></div>
+        <div class="form-group compact-fields"><label for="adresse-placo" data-i18n="adresse_chantier">Adresse du chantier</label><input type="text" id="adresse-placo" data-i18n-placeholder="ph_adresse" placeholder="Ex : 12 rue des Lilas, Colmar"></div>
+        <div class="form-group compact-fields"><label for="date-souhaitee-placo" data-i18n="date_souhaitee">Date souhaitée chantier</label><input type="date" id="date-souhaitee-placo"></div>
+        <div class="client-grid"><div class="form-group compact-fields"><label for="email-placo" data-i18n="email_client">Email client</label><input type="email" id="email-placo" data-i18n-placeholder="ph_email_client" placeholder="client@email.fr"></div><div class="form-group compact-fields"><label for="telephone-placo" data-i18n="telephone_client">Téléphone client</label><input type="tel" id="telephone-placo" data-i18n-placeholder="ph_tel_client" placeholder="06 ..."></div></div>
+        <div class="form-group"><label>Type de structure</label><div class="tile-grid grid-3"><label class="tile-radio"><input type="radio" name="type_placo" value="std" checked><span class="tile-icon">▤</span><strong>BA13 standard</strong></label><label class="tile-radio"><input type="radio" name="type_placo" value="hydro"><span class="tile-icon">≈</span><strong>Hydrofuge<br><small>salle d'eau</small></strong></label><label class="tile-radio"><input type="radio" name="type_placo" value="phoni"><span class="tile-icon">◉</span><strong>Phonique renforcée</strong></label></div></div>
+        <div class="form-group"><label for="surf-placo">Surface totale de cloison (m²)</label><input type="number" id="surf-placo" required min="1" step="0.1" placeholder="Surface totale (m²)"></div>
+        <div class="form-group split-line"><div><label for="marge-placo">Marge de perte matériaux</label><span class="switch-look">+8% standard</span></div><select id="marge-placo"><option value="1.08">8 % standard</option><option value="1.12">12 % nombreuses découpes</option></select></div>
+        <details class="finance-box"><summary data-i18n="options_devis">Options devis HT / TVA / remise</summary><div class="form-group"><label for="px-placo" data-i18n="prix_pose_global">Prix de vente posé (€ HT / m²)</label><input type="number" id="px-placo" min="0" step="0.01"></div>
+          <div class="detail-toggle"><label><input type="checkbox" id="mode-detail-placo" onchange="togglePrixDetail('placo')"> <span data-i18n="mode_detail_prix">Détailler le prix pour le client</span></label></div>
+          <div id="detail-prix-placo" class="detail-price-box" hidden><div class="form-group"><label for="prix-materiau-placo" data-i18n="prix_materiaux_placo">Matériaux plaques / ossature (€ HT / m²)</label><input type="number" id="prix-materiau-placo" min="0" step="0.01" value="22"></div><div class="form-group"><label for="prix-pose-placo" data-i18n="prix_pose_seule">Pose (€ HT / m²)</label><input type="number" id="prix-pose-placo" min="0" step="0.01" value="28"></div><div class="form-group"><label for="prix-conso-placo" data-i18n="prix_consommables_placo">Consommables vis / enduit (€ HT / m²)</label><input type="number" id="prix-conso-placo" min="0" step="0.01" value="5"></div></div>
+          <div class="form-group"><label for="tva-placo">Taux de TVA applicable</label><select id="tva-placo"><option value="0.10">10 % - Rénovation</option><option value="0.20">20 % - Neuf</option></select></div><div class="form-group"><label for="remise-placo">Remise commerciale (%)</label><input type="number" id="remise-placo" value="0" min="0" max="100" step="0.1"></div><div class="form-group prestations-complementaires-box">
+            <label>Prestations complémentaires</label>
+            <p class="mini-help">Coche une prestation, puis saisis le montant HT. Aucun prix n’est prédéfini.</p>
+            <div class="prestations-suggestions">
+              <label><input type="checkbox" value="Préparation chantier" onchange="togglePrestationComplementaire('placo', this)"> Préparation chantier</label>
+              <label><input type="checkbox" value="Dépose ancien carrelage" onchange="togglePrestationComplementaire('placo', this)"> Dépose ancien carrelage</label>
+              <label><input type="checkbox" value="Ragréage" onchange="togglePrestationComplementaire('placo', this)"> Ragréage</label>
+              <label><input type="checkbox" value="Étanchéité SPEC" onchange="togglePrestationComplementaire('placo', this)"> Étanchéité SPEC</label>
+              <label><input type="checkbox" value="Fourniture plinthes" onchange="togglePrestationComplementaire('placo', this)"> Fourniture plinthes</label>
+              <label><input type="checkbox" value="Pose plinthes" onchange="togglePrestationComplementaire('placo', this)"> Pose plinthes</label>
+              <label><input type="checkbox" value="Évacuation gravats" onchange="togglePrestationComplementaire('placo', this)"> Évacuation gravats</label>
+              <label><input type="checkbox" value="Nettoyage fin de chantier" onchange="togglePrestationComplementaire('placo', this)"> Nettoyage fin de chantier</label>
+              <label><input type="checkbox" value="Déplacement" onchange="togglePrestationComplementaire('placo', this)"> Déplacement</label>
+              <label><input type="checkbox" value="Autre prestation" data-custom="1" onchange="togglePrestationComplementaire('placo', this)"> Autre prestation</label>
+            </div>
+            <div id="prestations-montants-placo" class="prestations-montants"></div>
+          </div>
+          <div class="form-group manual-line"><label data-i18n="ligne_manuelle">Ligne manuelle optionnelle</label><input type="text" id="label-sup-placo" data-i18n-placeholder="ph_ligne_placo" placeholder="Ex : Forfait isolation laine de verre"><input type="number" id="montant-sup-placo" data-i18n-placeholder="ph_montant" placeholder="Montant en € HT" min="0" step="0.01"></div></details>
+        <div class="form-group photo-box"><label for="photo-placo" data-i18n="photo_chantier">Photo chantier optionnelle</label><input type="file" id="photo-placo" accept="image/*" onchange="previewPhoto('placo')"><img id="preview-placo" class="photo-preview" alt="Aperçu photo chantier" hidden><button type="button" id="remove-photo-placo" class="btn-photo-remove" onclick="removePhoto('placo')" hidden data-i18n="supprimer_photo">Supprimer la photo</button></div>
+        <button type="submit" class="btn-block"><span>▣</span> <span data-i18n="generer_devis_colisage">Générer mon devis<br>et colisage</span></button>
+      </form>
+      <section class="why-box"><h2>Pourquoi BATIPIK ?</h2><div class="why-grid"><span>⏱<small>Gagnez du temps</small></span><span>▤<small>Devis pro</small></span><span>▣<small>Colisage</small></span></div><div class="codex-footer-line">BATIPIK by Codex Expertise.</div></section>
+    </section>
+
+    <section id="pane-historique" class="pane">
+      <h1>Historique<br><span>- Chantiers locaux</span></h1>
+      <div class="action-row"><button type="button" class="btn-secondary" onclick="exporterCSV()">Exporter CSV Excel</button><button type="button" class="btn-secondary ghost" onclick="viderHistorique()">Vider</button></div>
+      <div id="historique-liste">Aucun chantier en mémoire pour l’instant.</div>
+    </section>
+
+    <section id="pane-parametres" class="pane">
+      <h1>Paramètres<br><span>- Artisan & tarifs</span></h1>
+      <form onsubmit="sauverParametres(event)">
+        <h2>Identité artisan / devis PDF</h2>
+        <div class="form-group"><label for="artisan-nom">🏢 Nom entreprise</label><input type="text" id="artisan-nom" placeholder="Ex : DEMIR CARRELAGE"></div>
+        <div class="form-group"><label for="artisan-contact">📞 Téléphone / Email</label><input type="text" id="artisan-contact" placeholder="Ex : 06 xx xx xx xx / contact@demir.fr"></div>
+        <div class="form-group"><label for="artisan-siret">📍 Adresse / SIRET</label><input type="text" id="artisan-siret" placeholder="Ex : 12 rue des Lilas, 68000 Colmar - SIRET ..."></div>
+        <div class="form-group logo-settings-box">
+          <label for="artisan-logo">🖼️ Logo entreprise</label>
+          <input type="file" id="artisan-logo" accept="image/png,image/jpeg,image/jpg" hidden onchange="choisirLogoArtisan(event)">
+          <button type="button" class="btn-logo-choice" onclick="document.getElementById('artisan-logo').click()">Choisir un logo</button>
+          <p id="artisan-logo-empty" class="logo-help">PNG, JPG ou JPEG — stocké localement sur cet appareil.</p>
+          <img id="artisan-logo-preview" class="artisan-logo-preview" alt="Logo entreprise" hidden>
+          <button type="button" id="artisan-logo-remove" class="btn-photo-remove" onclick="supprimerLogoArtisan()" hidden>Supprimer le logo</button>
+        </div>
+        <h2>Bibliothèque de prix</h2>
+        <div class="settings-price-sections">
+          <section class="settings-price-card settings-price-card-carreleur" aria-label="Tarifs carreleur">
+            <div class="settings-card-header">
+              <span class="settings-card-icon">▣</span>
+              <div>
+                <h3>Carreleur</h3>
+                <p>Prix posé et détail matériaux / pose</p>
+              </div>
+            </div>
+            <div class="form-group settings-main-price">
+              <label for="prix-carrelage-defaut">Prix posé par défaut (€ HT / m²)</label>
+              <input type="number" id="prix-carrelage-defaut" min="0" step="0.01">
+            </div>
+            <div class="settings-subtitle compact">Prix détaillé par défaut</div>
+            <div class="settings-grid">
+              <div class="form-group"><label for="prix-carrelage-materiau-defaut">Carrelage fourni (€ HT / m²)</label><input type="number" id="prix-carrelage-materiau-defaut" min="0" step="0.01"></div>
+              <div class="form-group"><label for="prix-carrelage-pose-defaut">Pose carrelage (€ HT / m²)</label><input type="number" id="prix-carrelage-pose-defaut" min="0" step="0.01"></div>
+              <div class="form-group"><label for="prix-carrelage-conso-defaut">Consommables colle / joints (€ HT / m²)</label><input type="number" id="prix-carrelage-conso-defaut" min="0" step="0.01"></div>
+            </div>
+          </section>
+
+          <section class="settings-price-card settings-price-card-plaquiste" aria-label="Tarifs plaquiste">
+            <div class="settings-card-header">
+              <span class="settings-card-icon">▥</span>
+              <div>
+                <h3>Plaquiste</h3>
+                <p>Prix posé et détail matériaux / pose</p>
+              </div>
+            </div>
+            <div class="form-group settings-main-price">
+              <label for="prix-placo-defaut">Prix posé par défaut (€ HT / m²)</label>
+              <input type="number" id="prix-placo-defaut" min="0" step="0.01">
+            </div>
+            <div class="settings-subtitle compact">Prix détaillé par défaut</div>
+            <div class="settings-grid">
+              <div class="form-group"><label for="prix-placo-materiau-defaut">Matériaux plaques / ossature (€ HT / m²)</label><input type="number" id="prix-placo-materiau-defaut" min="0" step="0.01"></div>
+              <div class="form-group"><label for="prix-placo-pose-defaut">Pose plaquiste (€ HT / m²)</label><input type="number" id="prix-placo-pose-defaut" min="0" step="0.01"></div>
+              <div class="form-group"><label for="prix-placo-conso-defaut">Consommables vis / enduit (€ HT / m²)</label><input type="number" id="prix-placo-conso-defaut" min="0" step="0.01"></div>
+            </div>
+          </section>
+        </div>
+        <p class="settings-note">Le détail matériaux / pose reste une option activable chantier par chantier. Le devis client reste toujours généré en français, même si l’interface est en turc.</p>
+        <button type="submit" class="btn-block" data-i18n="enregistrer_parametres">Enregistrer les paramètres</button>
+      </form>
+    </section>
+
+    <div id="result-modal" class="modal" role="dialog" aria-modal="true" aria-label="Résultat du devis">
+      <div class="modal-content">
+        <button type="button" class="close-modal" onclick="closeModal()" aria-label="Fermer">&times;</button>
+        <div id="modal-body-content"></div>
+      </div>
+    </div>
+  </main>
+  <script src="app.js"></script>
+
+</body>
+</html>
