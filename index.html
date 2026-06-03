@@ -600,15 +600,28 @@
     }
 
     window.addEventListener("DOMContentLoaded", async () => {
-      try {
-        await chargerLicences();
-        const licence = await getLicence();
-        renderLicence(licence);
-      } catch (error) {
-        console.error("Erreur licence BATIPIK", error);
-        afficherErreurLicence("Impossible de lire la licence locale.");
-      }
-    });
+  try {
+    await chargerLicences();
+
+    const params = new URLSearchParams(window.location.search);
+    const modeDemo = params.get("demo") === "1";
+
+    if (modeDemo) {
+      await deleteLicence();
+      document.getElementById("license-code").value = "BATIPIK-DEMO";
+      await activerLicence();
+
+      window.history.replaceState({}, document.title, "index.html");
+      return;
+    }
+
+    const licence = await getLicence();
+    renderLicence(licence);
+  } catch (error) {
+    console.error("Erreur licence BATIPIK", error);
+    afficherErreurLicence("Impossible de lire la licence locale.");
+  }
+});
   </script>
 </body>
 </html>
