@@ -84,7 +84,7 @@ function devisDemoMaxAtteint(licence) {
 
 function afficherDemoTerminee(licence) {
   const max = Number(licence?.maxDevis || 3);
-  openModal(`<h1>Version démonstration terminée</h1><p class="modal-subtitle">La clé BATIPIK-DEMO permet de générer ${max} devis maximum sur cet appareil.</p><div class="res-section"><p>Pour continuer à utiliser BATIPIK, activez une licence artisan annuelle ou contactez Codex Expertise.</p></div><div class="modal-actions"><button class="btn-secondary" onclick="window.location.href='index.html'">Changer de licence</button><button class="btn-secondary ghost" onclick="closeModal()">Fermer</button></div>`);
+  openModal(`<h1>Version démonstration terminée</h1><p class="modal-subtitle">La clé BATIPIK-DEMO permet de générer ${max} devis maximum sur cet appareil.</p><div class="res-section"><p>Pour continuer à utiliser BATIPIK, activez une licence artisan annuelle ou contactez Codex Expertise au 06 26 07 35 56.</p></div><div class="modal-actions"><button class="btn-secondary" onclick="window.location.href='index.html'">Changer de licence</button><button class="btn-secondary ghost" onclick="closeModal()">Fermer</button></div>`);
 }
 
 function devisExisteDejaDansBrouillon(module, identity) {
