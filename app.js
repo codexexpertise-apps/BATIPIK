@@ -76,6 +76,9 @@ async function verifierAccesApplication() {
     return false;
   }
 }
+function quitterBatipik() {
+  window.location.href = 'index.html';
+}
 
 function devisDemoMaxAtteint(licence) {
   if (!licence || !Number.isFinite(Number(licence.maxDevis))) return false;
