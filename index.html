@@ -600,18 +600,26 @@
     }
 
     window.addEventListener("DOMContentLoaded", async () => {
-  try {
-    await chargerLicences();
+      try {
+       await chargerLicences();
 
-    const params = new URLSearchParams(window.location.search);
-    const modeDemo = params.get("demo") === "1";
+       const params = new URLSearchParams(window.location.search);
+       const modeDemo = params.get("demo") === "1";
+       const resetLicence = params.get("reset") === "1";
+
+    if (resetLicence) {
+      await deleteLicence();
+      window.history.replaceState({}, document.title, window.location.pathname);
+      renderLicence(null);
+      return;
+    }
 
     if (modeDemo) {
       await deleteLicence();
       document.getElementById("license-code").value = "BATIPIK-DEMO";
       await activerLicence();
 
-      window.history.replaceState({}, document.title, "index.html");
+      window.history.replaceState({}, document.title, window.location.pathname);
       return;
     }
 
