@@ -477,7 +477,7 @@
       document.getElementById("status-end").textContent = isPermanent(licence) ? "Aucune expiration" : formatDateFr(licence.dateExpiration);
       const demoLine = document.getElementById("status-demo-line");
       const demoCount = document.getElementById("status-demo-count");
-      if (Number.isFinite(Number(licence.maxDevis))) {
+      if (licence.maxDevis !== null && licence.maxDevis !== undefined && Number.isFinite(Number(licence.maxDevis))) {
         demoLine.classList.remove("hidden");
         demoCount.textContent = `${Number(licence.devisGeneres || 0)} / ${Number(licence.maxDevis)} devis`;
       } else {
@@ -566,7 +566,9 @@
         type: config.type || "client",
         dateActivation: today.toISOString(),
         dateExpiration: config.expiration === null ? null : config.expiration,
-        maxDevis: Number.isFinite(Number(config.maxDevis)) ? Number(config.maxDevis) : null,
+        maxDevis: config.maxDevis === null || config.maxDevis === undefined || config.maxDevis === ""
+         ? null
+         : Number(config.maxDevis),
         devisGeneres: 0,
         version: "licences-json-4-demo-3-devis"
       };
