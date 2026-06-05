@@ -81,7 +81,8 @@ function quitterBatipik() {
 }
 
 function devisDemoMaxAtteint(licence) {
-  if (!licence || !Number.isFinite(Number(licence.maxDevis))) return false;
+  if (!licence || licence.type !== 'demo') return false;
+  if (licence.maxDevis === null || licence.maxDevis === undefined || licence.maxDevis === '') return false;
   return Number(licence.devisGeneres || 0) >= Number(licence.maxDevis);
 }
 
@@ -113,7 +114,8 @@ async function autoriserNouveauDevis(module, identity) {
 async function incrementerCompteurDevisDemo() {
   try {
     const licence = await lireLicenceActive();
-    if (!licence || !Number.isFinite(Number(licence.maxDevis))) return;
+    if (!licence || licence.type !== 'demo') return;
+    if (licence.maxDevis === null || licence.maxDevis === undefined || licence.maxDevis === '') return;
     licence.devisGeneres = Number(licence.devisGeneres || 0) + 1;
     licence.derniereGenerationDevis = new Date().toISOString();
     await sauvegarderLicenceActive(licence);
