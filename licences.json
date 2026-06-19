@@ -1,0 +1,12 @@
+{
+  "BATIPIK-CODEX-ADMIN": {
+    "type": "admin",
+    "expiration": null,
+    "maxDevis": null
+  },
+  "BATIPIK-DEMO": {
+    "type": "demo",
+    "expiration": null,
+    "maxDevis": 3
+  }
+}
